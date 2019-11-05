@@ -1,6 +1,7 @@
 package com.example.bamenela.gestureexampleactivity;
 
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -11,7 +12,6 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
-import android.widget.Toast;
 
 
 public class TouchExample extends View {
@@ -63,6 +63,7 @@ public class TouchExample extends View {
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         mGestureDetector.onTouchEvent(event);
@@ -139,7 +140,7 @@ public class TouchExample extends View {
         int widthBitmap = metrics.widthPixels/n;
 //        Log.d("ApplicationTagName", "T Display width in px is " + metrics);
 //        Log.d("ApplicationTagName", "T Bitmap DPI width " + widthBitmap);
-        if(unit == "dpi"){
+        if(unit.equals("dpi")){
             return Math.round(widthBitmap/metrics.scaledDensity);
         }else{
             return widthBitmap;
