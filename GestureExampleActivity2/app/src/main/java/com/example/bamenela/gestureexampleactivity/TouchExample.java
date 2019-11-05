@@ -5,10 +5,13 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
+import android.widget.Toast;
 
 
 public class TouchExample extends View {
@@ -41,6 +44,12 @@ public class TouchExample extends View {
 
         mGestureDetector = new GestureDetector(context, new ZoomGesture());
         mScaleGestureDetector = new ScaleGestureDetector(context, new ScaleGesture());
+
+        for (int i=1; i<=7; i++){
+            Log.d("ApplicationTagName", "T Display width in dpi is " + getBitMapResolution(i, "dpi"));
+            Log.d("ApplicationTagName", "T Display width in px is " + getBitMapResolution(i, "px"));
+        }
+
     }
 
     @Override
@@ -99,6 +108,7 @@ public class TouchExample extends View {
             mPaint.setTextSize(mScale*mFontSize);
             normal = !normal;
             invalidate();
+            getBitMapResolution((normal ? 7 : 3),"dpi");
             return true;
         }
     }
@@ -109,7 +119,31 @@ public class TouchExample extends View {
             mScale *= detector.getScaleFactor();
             mPaint.setTextSize(mScale*mFontSize);
             invalidate();
+            getBitMapResolution((int)(8-Math.floor(mScale/1f)),"dpi");
+//            Toast.makeText(getContext(), "|"+(8-Math.floor(mScale/1f)), Toast.LENGTH_SHORT).show();
             return true;
         }
+    }
+
+    public int getBitMapResolution(int n, String unit){
+
+        if(n<1) {
+            n=1;
+        } else {
+            if (n > 7) {
+                n = 7;
+            }
+        }
+
+        DisplayMetrics metrics = getResources().getDisplayMetrics();
+        int widthBitmap = metrics.widthPixels/n;
+//        Log.d("ApplicationTagName", "T Display width in px is " + metrics);
+//        Log.d("ApplicationTagName", "T Bitmap DPI width " + widthBitmap);
+        if(unit == "dpi"){
+            return Math.round(widthBitmap/metrics.scaledDensity);
+        }else{
+            return widthBitmap;
+        }
+
     }
 }
