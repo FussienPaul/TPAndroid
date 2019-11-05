@@ -3,9 +3,12 @@ package com.example.bamenela.gestureexampleactivity;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.drawable.BitmapDrawable;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -13,13 +16,18 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 
 public class TouchExample extends View {
     private static final int MAX_POINTERS = 5;
+    final BitmapFactory.Options options = new BitmapFactory.Options();
     private float mScale = 1f;
     private GestureDetector mGestureDetector;
     private ScaleGestureDetector mScaleGestureDetector;
-
+    private ArrayList<String> images;
+    private HashMap<Integer, BitmapDrawable> imageList = new HashMap<Integer, BitmapDrawable>();
     private Pointer[] mPointers = new Pointer[MAX_POINTERS];
     private Paint mPaint;
     private float mFontSize;
@@ -55,12 +63,13 @@ public class TouchExample extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        for (Pointer p : mPointers) {
-            if (p.index != -1) {
-                String text = "Index: " + p.index + " ID: " + p.id;
-                canvas.drawText(text, p.x, p.y, mPaint);
-            }
-        }
+        Bitmap bitmap = BitmapFactory.decodeFile(Singleton.getInstance().listImageMemory.get(0), options);
+        imageList.put(0,new BitmapDrawable(getResources(), bitmap));
+        BitmapDrawable image = imageList.get(0);
+        image.draw(canvas);
+
+
+        canvas.drawBitmap(image.getBitmap(), 0, 0, mPaint);
     }
 
     @SuppressLint("ClickableViewAccessibility")
