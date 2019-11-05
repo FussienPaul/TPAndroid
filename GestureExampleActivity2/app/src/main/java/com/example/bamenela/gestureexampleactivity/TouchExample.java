@@ -18,7 +18,9 @@ import android.widget.Toast;
 public class TouchExample extends View {
     private static final int MAX_POINTERS = 5;
     private float mScale = 1f;
-    private int bitmapResolution = getBitMapResolution(7, "dpi");
+    private int currentNbColumn = 7;
+    private int bitmapResolution = getBitMapResolution(currentNbColumn, "dpi");
+    private int maxBitmapRow = getBitmapRow(bitmapResolution);
     private GestureDetector mGestureDetector;
     private ScaleGestureDetector mScaleGestureDetector;
 
@@ -47,6 +49,8 @@ public class TouchExample extends View {
         mGestureDetector = new GestureDetector(context, new ZoomGesture());
         mScaleGestureDetector = new ScaleGestureDetector(context, new ScaleGesture());
 
+//        Toast.makeText(getContext(), "Row: "+maxBitmapRow, Toast.LENGTH_SHORT).show();
+
     }
 
     @Override
@@ -58,7 +62,7 @@ public class TouchExample extends View {
                 canvas.drawText(text, p.x, p.y, mPaint);
             }
         }
-        Toast.makeText(getContext(), "."+bitmapResolution, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), "R: "+bitmapResolution+"| r: "+maxBitmapRow+"| c: "+currentNbColumn, Toast.LENGTH_SHORT).show();
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -108,6 +112,7 @@ public class TouchExample extends View {
             normal = !normal;
             invalidate();
             bitmapResolution = getBitMapResolution((normal ? 7 : 3),"dpi");
+            maxBitmapRow = getBitmapRow(bitmapResolution);
             return true;
         }
     }
@@ -119,6 +124,7 @@ public class TouchExample extends View {
             mPaint.setTextSize(mScale*mFontSize);
             invalidate();
             bitmapResolution = getBitMapResolution((int)(8-Math.floor(mScale/1f)),"dpi");
+            maxBitmapRow = getBitmapRow(bitmapResolution);
 //            Toast.makeText(getContext(), "|"+(8-Math.floor(mScale/1f)), Toast.LENGTH_SHORT).show();
             return true;
         }
@@ -138,11 +144,17 @@ public class TouchExample extends View {
         int widthBitmap = metrics.widthPixels/n;
 //        Log.d("ApplicationTagName", "T Display width in px is " + metrics);
 //        Log.d("ApplicationTagName", "T Bitmap DPI width " + widthBitmap);
+        currentNbColumn = n;
         if(unit.equals("dpi")){
             return Math.round(widthBitmap/metrics.scaledDensity);
         }else{
             return widthBitmap;
         }
 
+    }
+
+    public int getBitmapRow(int dpi){
+        DisplayMetrics metrics = getResources().getDisplayMetrics();
+        return Math.round(metrics.ydpi/dpi);
     }
 }
