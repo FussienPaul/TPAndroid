@@ -44,12 +44,7 @@ public class TouchExample extends View {
 
         mGestureDetector = new GestureDetector(context, new ZoomGesture());
         mScaleGestureDetector = new ScaleGestureDetector(context, new ScaleGesture());
-
-        for (int i=1; i<=7; i++){
-            Log.d("ApplicationTagName", "T Display width in dpi is " + getBitMapResolution(i, "dpi"));
-            Log.d("ApplicationTagName", "T Display width in px is " + getBitMapResolution(i, "px"));
-        }
-
+        
     }
 
     @Override
