@@ -12,11 +12,13 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
+import android.widget.Toast;
 
 
 public class TouchExample extends View {
     private static final int MAX_POINTERS = 5;
     private float mScale = 1f;
+    private int bitmapResolution = getBitMapResolution(7, "dpi");
     private GestureDetector mGestureDetector;
     private ScaleGestureDetector mScaleGestureDetector;
 
@@ -39,12 +41,12 @@ public class TouchExample extends View {
 
         mFontSize = 16 * getResources().getDisplayMetrics().density;
         mPaint = new Paint();
-        mPaint.setColor(Color.WHITE);
+        mPaint.setColor(Color.BLUE);
         mPaint.setTextSize(mFontSize);
 
         mGestureDetector = new GestureDetector(context, new ZoomGesture());
         mScaleGestureDetector = new ScaleGestureDetector(context, new ScaleGesture());
-        
+
     }
 
     @Override
@@ -56,6 +58,7 @@ public class TouchExample extends View {
                 canvas.drawText(text, p.x, p.y, mPaint);
             }
         }
+        Toast.makeText(getContext(), "."+bitmapResolution, Toast.LENGTH_SHORT).show();
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -104,7 +107,7 @@ public class TouchExample extends View {
             mPaint.setTextSize(mScale*mFontSize);
             normal = !normal;
             invalidate();
-            getBitMapResolution((normal ? 7 : 3),"dpi");
+            bitmapResolution = getBitMapResolution((normal ? 7 : 3),"dpi");
             return true;
         }
     }
@@ -115,7 +118,7 @@ public class TouchExample extends View {
             mScale *= detector.getScaleFactor();
             mPaint.setTextSize(mScale*mFontSize);
             invalidate();
-            getBitMapResolution((int)(8-Math.floor(mScale/1f)),"dpi");
+            bitmapResolution = getBitMapResolution((int)(8-Math.floor(mScale/1f)),"dpi");
 //            Toast.makeText(getContext(), "|"+(8-Math.floor(mScale/1f)), Toast.LENGTH_SHORT).show();
             return true;
         }
