@@ -27,7 +27,7 @@ public class TouchExample extends View {
     private float mScale = 1f;
     private int currentNbColumn = 7;
     private int bitmapResolution = getBitMapResolution(currentNbColumn, "dpi");
-    private int maxBitmapRow = getBitmapRow(bitmapResolution);
+    //private int maxBitmapRow = getBitmapRow(bitmapResolution);
     private GestureDetector mGestureDetector;
     private ScaleGestureDetector mScaleGestureDetector;
     private ArrayList<String> images;
@@ -120,7 +120,7 @@ public class TouchExample extends View {
             normal = !normal;
             invalidate();
             bitmapResolution = getBitMapResolution((normal ? 7 : 3),"dpi");
-            maxBitmapRow = getBitmapRow(bitmapResolution);
+            //maxBitmapRow = getBitmapRow(bitmapResolution);
             return true;
         }
     }
@@ -132,7 +132,7 @@ public class TouchExample extends View {
             mPaint.setTextSize(mScale*mFontSize);
             invalidate();
             bitmapResolution = getBitMapResolution((int)(8-Math.floor(mScale/1f)),"dpi");
-            maxBitmapRow = getBitmapRow(bitmapResolution);
+            //maxBitmapRow = getBitmapRow(bitmapResolution);
 //            Toast.makeText(getContext(), "|"+(8-Math.floor(mScale/1f)), Toast.LENGTH_SHORT).show();
             return true;
         }
