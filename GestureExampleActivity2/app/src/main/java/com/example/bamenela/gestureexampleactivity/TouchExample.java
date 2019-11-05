@@ -15,6 +15,7 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,6 +25,9 @@ public class TouchExample extends View {
     private static final int MAX_POINTERS = 5;
     final BitmapFactory.Options options = new BitmapFactory.Options();
     private float mScale = 1f;
+    private int currentNbColumn = 7;
+    private int bitmapResolution = getBitMapResolution(currentNbColumn, "dpi");
+    private int maxBitmapRow = getBitmapRow(bitmapResolution);
     private GestureDetector mGestureDetector;
     private ScaleGestureDetector mScaleGestureDetector;
     private ArrayList<String> images;
@@ -47,16 +51,13 @@ public class TouchExample extends View {
 
         mFontSize = 16 * getResources().getDisplayMetrics().density;
         mPaint = new Paint();
-        mPaint.setColor(Color.WHITE);
+        mPaint.setColor(Color.BLUE);
         mPaint.setTextSize(mFontSize);
 
         mGestureDetector = new GestureDetector(context, new ZoomGesture());
         mScaleGestureDetector = new ScaleGestureDetector(context, new ScaleGesture());
 
-        for (int i=1; i<=7; i++){
-            Log.d("ApplicationTagName", "T Display width in dpi is " + getBitMapResolution(i, "dpi"));
-            Log.d("ApplicationTagName", "T Display width in px is " + getBitMapResolution(i, "px"));
-        }
+//        Toast.makeText(getContext(), "Row: "+maxBitmapRow, Toast.LENGTH_SHORT).show();
 
     }
 
@@ -118,7 +119,8 @@ public class TouchExample extends View {
             mPaint.setTextSize(mScale*mFontSize);
             normal = !normal;
             invalidate();
-            getBitMapResolution((normal ? 7 : 3),"dpi");
+            bitmapResolution = getBitMapResolution((normal ? 7 : 3),"dpi");
+            maxBitmapRow = getBitmapRow(bitmapResolution);
             return true;
         }
     }
@@ -129,7 +131,8 @@ public class TouchExample extends View {
             mScale *= detector.getScaleFactor();
             mPaint.setTextSize(mScale*mFontSize);
             invalidate();
-            getBitMapResolution((int)(8-Math.floor(mScale/1f)),"dpi");
+            bitmapResolution = getBitMapResolution((int)(8-Math.floor(mScale/1f)),"dpi");
+            maxBitmapRow = getBitmapRow(bitmapResolution);
 //            Toast.makeText(getContext(), "|"+(8-Math.floor(mScale/1f)), Toast.LENGTH_SHORT).show();
             return true;
         }
