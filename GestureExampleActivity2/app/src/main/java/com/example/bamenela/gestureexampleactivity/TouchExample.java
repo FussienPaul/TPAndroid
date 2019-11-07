@@ -32,7 +32,6 @@ public class TouchExample extends View {
     private int currentNbColumn = 3;
     private int height = getResources().getDisplayMetrics().heightPixels;
     private int width = getResources().getDisplayMetrics().widthPixels;
-    private int bitmapResolution = getBitMapResolution(currentNbColumn, "dpi");
     private ArrayList<String> listImageMemory = Singleton.getInstance().listImageMemory;
     private int singletonSize = 0;
     private GestureDetector mGestureDetector;
@@ -213,15 +212,7 @@ public class TouchExample extends View {
 //            bitmapResolution = getBitMapResolution((normal ? 7 : 3), "dpi");
 //            return true;
 //        }
-        private boolean normal = true;
-        @Override
-        public boolean onDoubleTap(MotionEvent e) {
-            mScale = normal ? 3f : 1f;
-            mPaint.setTextSize(mScale * mFontSize);
-            normal = !normal;
-            invalidate();
-            return true;
-        }
+
 
         @Override
         /**
