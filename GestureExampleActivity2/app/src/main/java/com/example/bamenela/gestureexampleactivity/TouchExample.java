@@ -28,7 +28,7 @@ public class TouchExample extends View {
     private Canvas canvas;
     final BitmapFactory.Options options = new BitmapFactory.Options();
     private float mScale = 1f;
-    private int currentNbColumn = 3;
+    private int currentNbColumn = 7;
     private int height = getResources().getDisplayMetrics().heightPixels;
     private int width = getResources().getDisplayMetrics().widthPixels;
     private int bitmapResolution = getBitMapResolution(currentNbColumn, "dpi");
@@ -39,8 +39,8 @@ public class TouchExample extends View {
     private Pointer[] mPointers = new Pointer[MAX_POINTERS];
     private Paint mPaint;
     private float mFontSize;
-    private int index=0;
-    private float newset=0,set=0;
+    private int index = 0;
+    private float newset = 0, set = 0;
 
     class Pointer {
         float x = 0;
@@ -51,7 +51,7 @@ public class TouchExample extends View {
 
     public TouchExample(Context context) {
         super(context);
-        for (int i = 0; i<MAX_POINTERS; i++) {
+        for (int i = 0; i < MAX_POINTERS; i++) {
             mPointers[i] = new Pointer();
         }
 
@@ -64,41 +64,81 @@ public class TouchExample extends View {
         mScaleGestureDetector = new ScaleGestureDetector(context, new ScaleGesture());
     }
 
+    public static int calculateInSampleSize(
+            BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        // Raw height and width of image
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+
+        if (height > reqHeight || width > reqWidth) {
+
+            final int halfHeight = height / 2;
+            final int halfWidth = width / 2;
+
+            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+            // height and width larger than the requested height and width.
+            while ((halfHeight / inSampleSize) >= reqHeight
+                    && (halfWidth / inSampleSize) >= reqWidth) {
+                inSampleSize *= 2;
+            }
+        }
+
+        return inSampleSize;
+    }
+
     /**
      * Cette fonction permet d'afficher l'image en fonction de ce qui est souhaité en image par ligne (mac 3 pour eviter le crash a l'ouverture)
+     *
      * @param index
      * @param x
      * @param y
      * @param xmax
      * @param ymax
      * @param canvas
+     * https://developer.android.com/topic/performance/graphics/load-bitmap#java
      */
-    public void dispPicture(int index, int x, int y,int xmax, int ymax, Canvas canvas)
-    {
+    public void dispPicture(int index, int x, int y, int xmax, int ymax, Canvas canvas) {/*
         Bitmap bitmap = BitmapFactory.decodeFile(Singleton.getInstance().listImageMemory.get(index), options);
         imageList.put(index,new BitmapDrawable(getResources(), bitmap));
+        BitmapDrawable picture = imageList.get(index);*/
+
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(Singleton.getInstance().listImageMemory.get(index), options);
+
+        // Calculate inSampleSize
+        options.inSampleSize = calculateInSampleSize(options, xmax - x, ymax - y);
+
+        // Decode bitmap with inSampleSize set
+        options.inJustDecodeBounds = false;
+        Bitmap bitmap = BitmapFactory.decodeFile(Singleton.getInstance().listImageMemory.get(index), options);
+        imageList.put(index, new BitmapDrawable(bitmap));
+
         BitmapDrawable picture = imageList.get(index);
-        picture.setBounds(x,y,xmax,ymax);
+        picture.setBounds(x, y, xmax, ymax);
         picture.draw(canvas);
     }
 
     /**
      * On prend en compte le nombre de colonne (image par ligne) pour faire nos calculs de bordure d'image
+     *
      * @param currentNbColumn
+     *
      */
-    public void findPosition(int currentNbColumn){
-        int posx=0, posy=0, posxmax=0, posymax=0;
-        int nbligne= height/(width/currentNbColumn);
-        for(int j=0;j<nbligne;j++){
-            for(int i=0;i<currentNbColumn;i++) {
+    public void findPosition(int currentNbColumn) {
+        int posx = 0, posy = 0, posxmax = 0, posymax = 0;
+        int nbligne = height / (width / currentNbColumn);
+        int k = index;
+        for (int j = 0; j < nbligne; j++) {
+            for (int i = 0; i < currentNbColumn; i++) {
                 posx = i * (width / currentNbColumn);
-                posxmax = (i+1) * (width / currentNbColumn);
+                posxmax = (i + 1) * (width / currentNbColumn);
                 posy = j * (width / currentNbColumn);
-                posymax = (j+1) * (width / currentNbColumn);
-                dispPicture(index,posx,posy,posxmax,posymax,canvas);
-                if(index<Singleton.getInstance().listImageMemory.size())
-                {
-                    index++;
+                posymax = (j + 1) * (width / currentNbColumn);
+                dispPicture(k, posx, posy, posxmax, posymax, canvas);
+                if (k < Singleton.getInstance().listImageMemory.size()) {
+                    k++;
                 }
             }
         }
@@ -106,12 +146,13 @@ public class TouchExample extends View {
 
     /**
      * Fonction principale permettant de faire appel aux fonction
+     *
      * @param canvas
      */
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        this.canvas=canvas;
+        this.canvas = canvas;
         findPosition(currentNbColumn);
     }
 
@@ -127,11 +168,11 @@ public class TouchExample extends View {
             case MotionEvent.ACTION_POINTER_DOWN:
             case MotionEvent.ACTION_MOVE:
                 // clear previous pointers
-                for (int id = 0; id<MAX_POINTERS; id++)
+                for (int id = 0; id < MAX_POINTERS; id++)
                     mPointers[id].index = -1;
 
                 // Now fill in the current pointers
-                for (int i = 0; i<pointerCount; i++) {
+                for (int i = 0; i < pointerCount; i++) {
                     int id = event.getPointerId(i);
                     Pointer pointer = mPointers[id];
                     pointer.index = i;
@@ -142,7 +183,7 @@ public class TouchExample extends View {
                 invalidate();
                 break;
             case MotionEvent.ACTION_CANCEL:
-                for (int i = 0; i<pointerCount; i++) {
+                for (int i = 0; i < pointerCount; i++) {
                     int id = event.getPointerId(i);
                     mPointers[id].index = -1;
                 }
@@ -158,30 +199,36 @@ public class TouchExample extends View {
         @Override
         public boolean onDoubleTap(MotionEvent e) {
             mScale = normal ? 3f : 1f;
-            mPaint.setTextSize(mScale*mFontSize);
+            mPaint.setTextSize(mScale * mFontSize);
             normal = !normal;
             invalidate();
-            bitmapResolution = getBitMapResolution((normal ? 7 : 3),"dpi");
+            bitmapResolution = getBitMapResolution((normal ? 7 : 3), "dpi");
             return true;
         }
+
         @Override
         /**
          * Ici, on utilise la fonction onScroll afin de savoir si le doigt va vers le haut ou le bas
          */
-        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY){
+        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
             int Scrollinglimit = 1000;
             set = newset + distanceY;
-            if(set>Scrollinglimit){
-                newset  = distanceY;
-                index = index+currentNbColumn;
-                set =0;
+            if (set > Scrollinglimit) {
+                newset = distanceY;
+                Log.d("Zoom", "distanceY >  : " + distanceY);
+                Log.d("Zoom", "newset : >" + newset);
+                index = index + currentNbColumn;
+                set = 0;
             }
-            if(set<-Scrollinglimit){
-                newset  = distanceY;
-                index = index-currentNbColumn;
-                set =0;
+            if (set < -Scrollinglimit) {
+                newset = distanceY;
+                Log.d("Zoom", "distanceY :< " + distanceY);
+                Log.d("Zoom", "newset : <" + newset+"currrentNumber");
+                index = index - currentNbColumn;
+                set = 0;
             }
-            newset  = distanceY;
+            Log.d("Zoom", "currentNbColumn :  "+ currentNbColumn+"index = "+index);
+            newset = distanceY;
             return true;
         }
     }
@@ -193,17 +240,24 @@ public class TouchExample extends View {
         @Override
         public boolean onScale(ScaleGestureDetector detector) {
             mScale *= detector.getScaleFactor();
-            Log.d("Zoom", "Y : "+mScale);
-            currentNbColumn = (1 + 2) - (int) (mScale%3);
+            Log.d("Zoom", "mscale : " + mScale);
+            currentNbColumn =(int)( currentNbColumn/  (mScale));
+            if(currentNbColumn<1)
+            {
+                currentNbColumn=1;
+            }else     if(currentNbColumn>7)
+            {
+                currentNbColumn=7;
+            }
             invalidate();
             return true;
         }
     }
 
-    public int getBitMapResolution(int n, String unit){
+    public int getBitMapResolution(int n, String unit) {
 
-        if(n<1) {
-            n=1;
+        if (n < 1) {
+            n = 1;
         } else {
             if (n > 7) {
                 n = 7;
@@ -211,12 +265,12 @@ public class TouchExample extends View {
         }
 
         DisplayMetrics metrics = getResources().getDisplayMetrics();
-        int widthBitmap = metrics.widthPixels/n;
+        int widthBitmap = metrics.widthPixels / n;
 //        Log.d("ApplicationTagName", "T Display width in px is " + metrics);
 //        Log.d("ApplicationTagName", "T Bitmap DPI width " + widthBitmap);
-        if(unit.equals("dpi")){
-            return Math.round(widthBitmap/metrics.scaledDensity);
-        }else{
+        if (unit.equals("dpi")) {
+            return Math.round(widthBitmap / metrics.scaledDensity);
+        } else {
             return widthBitmap;
         }
 
