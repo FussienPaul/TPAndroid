@@ -6,28 +6,19 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
-import android.os.Handler;
-import android.util.DisplayMetrics;
-import android.util.Log;
-import android.util.SparseArray;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
-import android.widget.Toast;
-
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.logging.LogRecord;
+
 
 
 public class TouchExample extends View {
     private static final int MAX_POINTERS = 5;
     private Canvas canvas;
-    final BitmapFactory.Options options = new BitmapFactory.Options();
+//    final BitmapFactory.Options options = new BitmapFactory.Options();
     private float mScale = 1f;
     private int currentNbColumn = 3;
     private int height = getResources().getDisplayMetrics().heightPixels;
@@ -36,10 +27,9 @@ public class TouchExample extends View {
     private int singletonSize = 0;
     private GestureDetector mGestureDetector;
     private ScaleGestureDetector mScaleGestureDetector;
-    private SparseArray<BitmapDrawable> imageList = new SparseArray<>();
     private Pointer[] mPointers = new Pointer[MAX_POINTERS];
     private int index = 0;
-    private float newset = 0, set = 0;
+    private float newset = 0;
 
     class Pointer {
         float x = 0;
@@ -131,7 +121,7 @@ public class TouchExample extends View {
      *
      */
     public void findPosition(int currentNbColumn) {
-        int posx = 0, posy = 0, posxmax = 0, posymax = 0;
+        int posx, posy, posxmax, posymax;
         int nbligne = height / (width / currentNbColumn);
         int k = index;
         for (int j = 0; j < nbligne; j++) {
@@ -219,17 +209,16 @@ public class TouchExample extends View {
          * Ici, on utilise la fonction onScroll afin de savoir si le doigt va vers le haut ou le bas
          */
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-            int Scrollinglimit = 1000;
-            set = newset + distanceY;
-            if (set > Scrollinglimit) {
+
+            float set = newset + distanceY;
+            if (set > height) {
                 newset = distanceY;
                 index = index + currentNbColumn;
                 set = 0;
             }
-            if (set < -Scrollinglimit) {
+            if (set < -height) {
                 newset = distanceY;
                 index = index - currentNbColumn;
-                set = 0;
             }
             newset = distanceY;
             return true;
