@@ -43,7 +43,7 @@ public class TouchExample extends View {
     private Paint mPaint;
     private float mFontSize;
     private int index=0;
-    private float touchPositionY=0,mouvement=0;
+    private float newset=0,set=0;
 
     class Pointer {
         float x = 0;
@@ -65,40 +65,17 @@ public class TouchExample extends View {
 
         mGestureDetector = new GestureDetector(context, new ZoomGesture());
         mScaleGestureDetector = new ScaleGestureDetector(context, new ScaleGesture());
-        //loadWithThreads(Singleton.getInstance().listImageMemory.size());
 
 //        Toast.makeText(getContext(), "Row: "+maxBitmapRow, Toast.LENGTH_SHORT).show();
 
     }
-/*
-    public void loadWithThreads(final int Maxindex){
-        load = 0;
-        final Handler handlerObject = new Handler();
-        handlerObject.post(new Runnable() {
-            @Override
-            public void run() {
-                if (load < Singleton.getInstance().listImageMemory.size()) {
-                    Bitmap bitmap = BitmapFactory.decodeFile(Singleton.getInstance().listImageMemory.get(load), options);
-                    Log.d("LOADTREAD", "Thread PRE loaded load ID------------------- :"+load);
-                    imageList.put(load, new BitmapDrawable(getResources(), bitmap));
-                    load++;
-                    if(load<Maxindex)
-                    {
-                        handlerObject.post(this);
-                    }
-                }
-            }
-        });
-    }
-*/
+
     public void dispPicture(int index, int x, int y,int xmax, int ymax, Canvas canvas)
     {
-            Bitmap bitmap = BitmapFactory.decodeFile(Singleton.getInstance().listImageMemory.get(index), options);
-            imageList.put(index,new BitmapDrawable(getResources(), bitmap));
+        Bitmap bitmap = BitmapFactory.decodeFile(Singleton.getInstance().listImageMemory.get(index), options);
+        imageList.put(index,new BitmapDrawable(getResources(), bitmap));
         BitmapDrawable image = imageList.get(index);
-
         image.setBounds(x,y,xmax,ymax);
-        Log.d("LOADTREAD", "Thread PRE loaded ID------------------- :"+index);
         image.draw(canvas);
     }
 
@@ -124,13 +101,7 @@ public class TouchExample extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         this.canvas=canvas;
-        //Bitmap bitmap = BitmapFactory.decodeFile(Singleton.getInstance().listImageMemory.get(0), options);
-        //imageList.put(0,new BitmapDrawable(getResources(), bitmap));
-        //BitmapDrawable image = imageList.get(0);
-        //image.draw(canvas);
         findPosition(currentNbColumn);
-        //loadWithThreads(Singleton.getInstance().listImageMemory.size());
-        //canvas.drawBitmap(image.getBitmap(), 0, 0, mPaint);
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -185,22 +156,19 @@ public class TouchExample extends View {
         }
         @Override
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY){
-            mouvement = touchPositionY + distanceY;
-            if(mouvement>400){
-                Log.d("MOVE", "MOUVE DOWN ");
-                touchPositionY  = distanceY;
+            int Scrollinglimit = 1000;
+            set = newset + distanceY;
+            if(set>Scrollinglimit){
+                newset  = distanceY;
                 index = index+currentNbColumn;
-                mouvement =0;
+                set =0;
             }
-            if(mouvement<-400){
-                Log.d("MOVE", "MOUVE UP ");
-                touchPositionY  = distanceY;
-
+            if(set<-Scrollinglimit){
+                newset  = distanceY;
                 index = index-currentNbColumn;
-                mouvement =0;
+                set =0;
             }
-            Log.d("MOVE", "Y : "+distanceY +" mouv " +mouvement+"index = "+index);
-            touchPositionY  = distanceY;
+            newset  = distanceY;
             return true;
         }
     }
@@ -209,11 +177,9 @@ public class TouchExample extends View {
         @Override
         public boolean onScale(ScaleGestureDetector detector) {
             mScale *= detector.getScaleFactor();
-            mPaint.setTextSize(mScale*mFontSize);
+            Log.d("Zoom", "Y : "+mScale);
+            currentNbColumn = (1 + 2) - (int) (mScale%3);
             invalidate();
-            bitmapResolution = getBitMapResolution((int)(8-Math.floor(mScale/1f)),"dpi");
-            //maxBitmapRow = getBitmapRow(bitmapResolution);
-//            Toast.makeText(getContext(), "|"+(8-Math.floor(mScale/1f)), Toast.LENGTH_SHORT).show();
             return true;
         }
     }
