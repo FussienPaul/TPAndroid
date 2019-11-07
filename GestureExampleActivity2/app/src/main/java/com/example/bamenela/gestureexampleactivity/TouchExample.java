@@ -28,7 +28,7 @@ public class TouchExample extends View {
     private Canvas canvas;
     final BitmapFactory.Options options = new BitmapFactory.Options();
     private float mScale = 1f;
-    private int currentNbColumn = 7;
+    private int currentNbColumn = 3;
     private int height = getResources().getDisplayMetrics().heightPixels;
     private int width = getResources().getDisplayMetrics().widthPixels;
     private int bitmapResolution = getBitMapResolution(currentNbColumn, "dpi");
