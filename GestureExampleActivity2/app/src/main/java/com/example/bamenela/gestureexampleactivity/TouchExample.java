@@ -32,10 +32,7 @@ public class TouchExample extends View {
     private int height = getResources().getDisplayMetrics().heightPixels;
     private int width = getResources().getDisplayMetrics().widthPixels;
     private int bitmapResolution = getBitMapResolution(currentNbColumn, "dpi");
-    //private int maxBitmapRow = getBitmapRow(bitmapResolution);
     private GestureDetector mGestureDetector;
-    int load=0;
-    private Handler objectHandler;
     private ScaleGestureDetector mScaleGestureDetector;
     private ArrayList<String> images;
     private HashMap<Integer, BitmapDrawable> imageList = new HashMap<Integer, BitmapDrawable>();
@@ -65,20 +62,30 @@ public class TouchExample extends View {
 
         mGestureDetector = new GestureDetector(context, new ZoomGesture());
         mScaleGestureDetector = new ScaleGestureDetector(context, new ScaleGesture());
-
-//        Toast.makeText(getContext(), "Row: "+maxBitmapRow, Toast.LENGTH_SHORT).show();
-
     }
 
+    /**
+     * Cette fonction permet d'afficher l'image en fonction de ce qui est souhaité en image par ligne (mac 3 pour eviter le crash a l'ouverture)
+     * @param index
+     * @param x
+     * @param y
+     * @param xmax
+     * @param ymax
+     * @param canvas
+     */
     public void dispPicture(int index, int x, int y,int xmax, int ymax, Canvas canvas)
     {
         Bitmap bitmap = BitmapFactory.decodeFile(Singleton.getInstance().listImageMemory.get(index), options);
         imageList.put(index,new BitmapDrawable(getResources(), bitmap));
-        BitmapDrawable image = imageList.get(index);
-        image.setBounds(x,y,xmax,ymax);
-        image.draw(canvas);
+        BitmapDrawable picture = imageList.get(index);
+        picture.setBounds(x,y,xmax,ymax);
+        picture.draw(canvas);
     }
 
+    /**
+     * On prend en compte le nombre de colonne (image par ligne) pour faire nos calculs de bordure d'image
+     * @param currentNbColumn
+     */
     public void findPosition(int currentNbColumn){
         int posx=0, posy=0, posxmax=0, posymax=0;
         int nbligne= height/(width/currentNbColumn);
@@ -97,6 +104,10 @@ public class TouchExample extends View {
         }
     }
 
+    /**
+     * Fonction principale permettant de faire appel aux fonction
+     * @param canvas
+     */
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
@@ -151,10 +162,12 @@ public class TouchExample extends View {
             normal = !normal;
             invalidate();
             bitmapResolution = getBitMapResolution((normal ? 7 : 3),"dpi");
-            //maxBitmapRow = getBitmapRow(bitmapResolution);
             return true;
         }
         @Override
+        /**
+         * Ici, on utilise la fonction onScroll afin de savoir si le doigt va vers le haut ou le bas
+         */
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY){
             int Scrollinglimit = 1000;
             set = newset + distanceY;
@@ -173,6 +186,9 @@ public class TouchExample extends View {
         }
     }
 
+    /**
+     * Le scale gesture permet de changer le nombre d'affichage
+     */
     public class ScaleGesture extends ScaleGestureDetector.SimpleOnScaleGestureListener {
         @Override
         public boolean onScale(ScaleGestureDetector detector) {
