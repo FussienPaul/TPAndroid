@@ -7,10 +7,19 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.support.annotation.Nullable;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.target.Target;
+import com.bumptech.glide.request.transition.Transition;
+
 import java.util.ArrayList;
 
 
@@ -95,7 +104,7 @@ public class TouchExample extends View {
      * @param canvas
      * https://developer.android.com/topic/performance/graphics/load-bitmap#java
      */
-    public void dispPicture(int index, int x, int y, int xmax, int ymax, Canvas canvas) {
+    public void dispPicture(int index, int x, int y, int xmax, int ymax, final Canvas canvas) {
 
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
@@ -107,10 +116,15 @@ public class TouchExample extends View {
         // Decode bitmap with inSampleSize set
         options.inJustDecodeBounds = false;
         Bitmap bitmap = BitmapFactory.decodeFile(listImageMemory.get(index), options);
-//        imageList.put(index, new BitmapDrawable(bitmap));
-//        BitmapDrawable picture = imageList.get(index);
         BitmapDrawable picture = new BitmapDrawable(getContext().getResources(),bitmap);
         picture.setBounds(x, y, xmax, ymax);
+//        Glide.with(getContext())
+//                .asBitmap()
+//                .load(listImageMemory.get(index))
+//                .into(new Target<Bitmap>() {
+//
+//                });
+
         picture.draw(canvas);
     }
 
