@@ -12,6 +12,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
@@ -32,13 +33,12 @@ public class TouchExample extends View {
     private int height = getResources().getDisplayMetrics().heightPixels;
     private int width = getResources().getDisplayMetrics().widthPixels;
     private int bitmapResolution = getBitMapResolution(currentNbColumn, "dpi");
+    private ArrayList<String> listImageMemory = Singleton.getInstance().listImageMemory;
+    private int singletonSize = 0;
     private GestureDetector mGestureDetector;
     private ScaleGestureDetector mScaleGestureDetector;
-    private ArrayList<String> images;
-    private HashMap<Integer, BitmapDrawable> imageList = new HashMap<Integer, BitmapDrawable>();
+    private SparseArray<BitmapDrawable> imageList = new SparseArray<>();
     private Pointer[] mPointers = new Pointer[MAX_POINTERS];
-    private Paint mPaint;
-    private float mFontSize;
     private int index = 0;
     private float newset = 0, set = 0;
 
@@ -55,10 +55,7 @@ public class TouchExample extends View {
             mPointers[i] = new Pointer();
         }
 
-        mFontSize = 16 * getResources().getDisplayMetrics().density;
-        mPaint = new Paint();
-        mPaint.setColor(Color.BLUE);
-        mPaint.setTextSize(mFontSize);
+        singletonSize = listImageMemory.size();
 
         mGestureDetector = new GestureDetector(context, new ZoomGesture());
         mScaleGestureDetector = new ScaleGestureDetector(context, new ScaleGesture());
@@ -102,17 +99,17 @@ public class TouchExample extends View {
 
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(Singleton.getInstance().listImageMemory.get(index), options);
+        BitmapFactory.decodeFile(listImageMemory.get(index), options);
 
         // Calculate inSampleSize
         options.inSampleSize = calculateInSampleSize(options, xmax - x, ymax - y);
 
         // Decode bitmap with inSampleSize set
         options.inJustDecodeBounds = false;
-        Bitmap bitmap = BitmapFactory.decodeFile(Singleton.getInstance().listImageMemory.get(index), options);
-        imageList.put(index, new BitmapDrawable(bitmap));
-
-        BitmapDrawable picture = imageList.get(index);
+        Bitmap bitmap = BitmapFactory.decodeFile(listImageMemory.get(index), options);
+//        imageList.put(index, new BitmapDrawable(bitmap));
+//        BitmapDrawable picture = imageList.get(index);
+        BitmapDrawable picture = new BitmapDrawable(getContext().getResources(),bitmap);
         picture.setBounds(x, y, xmax, ymax);
         picture.draw(canvas);
     }
@@ -134,7 +131,7 @@ public class TouchExample extends View {
                 posy = j * (width / currentNbColumn);
                 posymax = (j + 1) * (width / currentNbColumn);
                 dispPicture(k, posx, posy, posxmax, posymax, canvas);
-                if (k < Singleton.getInstance().listImageMemory.size()) {
+                if (k < singletonSize) {
                     k++;
                 }
             }
@@ -142,7 +139,7 @@ public class TouchExample extends View {
     }
 
     /**
-     * Fonction principale permettant de faire appel aux fonction
+     * Fonction principale permettant de faire appel aux fonctions
      *
      * @param canvas
      */
@@ -152,8 +149,8 @@ public class TouchExample extends View {
         this.canvas = canvas;
         if(index<0)
             index=0;
-        if(index>Singleton.getInstance().listImageMemory.size())
-            index=Singleton.getInstance().listImageMemory.size();
+        if(index>singletonSize)
+            index=singletonSize;
         findPosition(currentNbColumn);
     }
 
@@ -195,17 +192,16 @@ public class TouchExample extends View {
     }
 
     public class ZoomGesture extends GestureDetector.SimpleOnGestureListener {
-        private boolean normal = true;
-
-        @Override
-        public boolean onDoubleTap(MotionEvent e) {
-            mScale = normal ? 3f : 1f;
-            mPaint.setTextSize(mScale * mFontSize);
-            normal = !normal;
-            invalidate();
-            bitmapResolution = getBitMapResolution((normal ? 7 : 3), "dpi");
-            return true;
-        }
+//        private boolean normal = true;
+//        @Override
+//        public boolean onDoubleTap(MotionEvent e) {
+//            mScale = normal ? 3f : 1f;
+//            mPaint.setTextSize(mScale * mFontSize);
+//            normal = !normal;
+//            invalidate();
+//            bitmapResolution = getBitMapResolution((normal ? 7 : 3), "dpi");
+//            return true;
+//        }
 
         @Override
         /**
