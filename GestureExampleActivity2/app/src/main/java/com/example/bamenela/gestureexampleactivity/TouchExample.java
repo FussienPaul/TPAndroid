@@ -57,10 +57,21 @@ public class TouchExample extends View {
 
         singletonSize = listImageMemory.size();
 
+        /**
+         * Permet d'utiliser les gestures pour le scroll et le zoom/dezoom
+         */
         mGestureDetector = new GestureDetector(context, new ZoomGesture());
         mScaleGestureDetector = new ScaleGestureDetector(context, new ScaleGesture());
     }
 
+    /**Cette fonction permet d'optimiser le calcul de l'affichage des images
+     *
+     * @param options
+     * @param reqWidth
+     * @param reqHeight
+     * @return
+     * https://developer.android.com/topic/performance/graphics/load-bitmap#java
+     */
     public static int calculateInSampleSize(
             BitmapFactory.Options options, int reqWidth, int reqHeight) {
         // Raw height and width of image
@@ -202,6 +213,15 @@ public class TouchExample extends View {
 //            bitmapResolution = getBitMapResolution((normal ? 7 : 3), "dpi");
 //            return true;
 //        }
+        private boolean normal = true;
+        @Override
+        public boolean onDoubleTap(MotionEvent e) {
+            mScale = normal ? 3f : 1f;
+            mPaint.setTextSize(mScale * mFontSize);
+            normal = !normal;
+            invalidate();
+            return true;
+        }
 
         @Override
         /**
@@ -236,34 +256,12 @@ public class TouchExample extends View {
             if(currentNbColumn<1)
             {
                 currentNbColumn=1;
-            }else     if(currentNbColumn>7)
+            }else if(currentNbColumn>7)
             {
                 currentNbColumn=7;
             }
             invalidate();
             return true;
         }
-    }
-
-    public int getBitMapResolution(int n, String unit) {
-
-        if (n < 1) {
-            n = 1;
-        } else {
-            if (n > 7) {
-                n = 7;
-            }
-        }
-
-        DisplayMetrics metrics = getResources().getDisplayMetrics();
-        int widthBitmap = metrics.widthPixels / n;
-//        Log.d("ApplicationTagName", "T Display width in px is " + metrics);
-//        Log.d("ApplicationTagName", "T Bitmap DPI width " + widthBitmap);
-        if (unit.equals("dpi")) {
-            return Math.round(widthBitmap / metrics.scaledDensity);
-        } else {
-            return widthBitmap;
-        }
-
     }
 }
