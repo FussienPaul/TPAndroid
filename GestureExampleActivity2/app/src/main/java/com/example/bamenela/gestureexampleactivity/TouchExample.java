@@ -98,10 +98,7 @@ public class TouchExample extends View {
      * @param canvas
      * https://developer.android.com/topic/performance/graphics/load-bitmap#java
      */
-    public void dispPicture(int index, int x, int y, int xmax, int ymax, Canvas canvas) {/*
-        Bitmap bitmap = BitmapFactory.decodeFile(Singleton.getInstance().listImageMemory.get(index), options);
-        imageList.put(index,new BitmapDrawable(getResources(), bitmap));
-        BitmapDrawable picture = imageList.get(index);*/
+    public void dispPicture(int index, int x, int y, int xmax, int ymax, Canvas canvas) {
 
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
@@ -153,6 +150,10 @@ public class TouchExample extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         this.canvas = canvas;
+        if(index<0)
+            index=0;
+        if(index>Singleton.getInstance().listImageMemory.size())
+            index=Singleton.getInstance().listImageMemory.size();
         findPosition(currentNbColumn);
     }
 
@@ -215,19 +216,14 @@ public class TouchExample extends View {
             set = newset + distanceY;
             if (set > Scrollinglimit) {
                 newset = distanceY;
-                Log.d("Zoom", "distanceY >  : " + distanceY);
-                Log.d("Zoom", "newset : >" + newset);
                 index = index + currentNbColumn;
                 set = 0;
             }
             if (set < -Scrollinglimit) {
                 newset = distanceY;
-                Log.d("Zoom", "distanceY :< " + distanceY);
-                Log.d("Zoom", "newset : <" + newset+"currrentNumber");
                 index = index - currentNbColumn;
                 set = 0;
             }
-            Log.d("Zoom", "currentNbColumn :  "+ currentNbColumn+"index = "+index);
             newset = distanceY;
             return true;
         }
@@ -240,7 +236,6 @@ public class TouchExample extends View {
         @Override
         public boolean onScale(ScaleGestureDetector detector) {
             mScale *= detector.getScaleFactor();
-            Log.d("Zoom", "mscale : " + mScale);
             currentNbColumn =(int)( currentNbColumn/  (mScale));
             if(currentNbColumn<1)
             {
